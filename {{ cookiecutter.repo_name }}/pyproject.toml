@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "{{cookiecutter.repo_name}}"
+version = "0.1.0"
+description = '{{ cookiecutter.description }}'
+authors = ["Your name <your.name@guidion.net>"]
+maintainers = ["cookiecutter.author_name <{{cookiecutter.author_email}}>"]
+repository = "github repository url here"
+license = '{% if cookiecutter.open_source_license == 'MIT' %}MIT{% elif cookiecutter.open_source_license == 'BSD-3-Clause' %}BSD-3{% endif %}'
+packages = [
+    {include = "src"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+loguru = "^0.5.3"
+click = "^8.0.1"
+Sphinx = "^4.0.3"
+coverage = "^5.5"
+python-dotenv = "^0.18.0"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+flake8 = "^3.9.2"
+mypy = "^0.812"
+pre-commit = "^2.12.1"
+pytest = "^5.2"
+pytest-cov = "^2.11.1"
+bump2version = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
