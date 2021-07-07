@@ -5,8 +5,10 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-PROFILE = "{{cookiecutter.aws_profile}}"
+PROFILE = {{cookiecutter.aws_profile}}
 PROJECT_NAME = {{ cookiecutter.repo_name }}
+CLOUD_VENDOR = {{ cookiecutter.cloud_vendor }}
+DATA_BUCKET = {{ cookiecutter.bucket }}
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -33,29 +35,29 @@ lint:
 setup-pre-commit:
 	poetry run pre-commit install
 
-{% if not cookiecutter.dataset_storage.none %}
+{% if not cookiecutter.cloud_vendor == "none" %}
 ## Download Data from storage system
 sync_data_down:
-	{% if cookiecutter.dataset_storage.s3 -%}
-	aws s3 sync s3://{{ cookiecutter.dataset_storage.s3.bucket }}/data/\
-		data/ {% if cookiecutter.dataset_storage.s3.aws_profile != 'default' %} --profile {{ cookiecutter.dataset_storage.s3.aws_profile }}{% endif %}
-	{% elif cookiecutter.dataset_storage.azure -%}
-	az storage blob download-batch -s {{ cookiecutter.dataset_storage.azure.container }}/data/ \
+	{% if cookiecutter.cloud_vendor == "AWS" -%}
+	aws s3 sync s3://{{ cookiecutter.bucket }}/data/\
+		data/ {% if cookiecutter.aws_profile != 'default' %} --profile {{ cookiecutter.aws_profile }}{% endif %}
+	{% elif cookiecutter.cloud_vendor == "Azure" -%}
+	az storage blob download-batch -s {{ cookiecutter.bucket }}/data/ \
 		-d data/
-	{% elif cookiecutter.dataset_storage.gcs -%}
-	gsutil rsync gs://{{ cookiecutter.dataset_storage.gcs.bucket }}/data/ data/
+	{% elif cookiecutter.cloud_vendor == "GCS" %}
+	gsutil rsync gs://{{ cookiecutter.bucket }}/data/ data/
 	{% endif %}
 
 ## Upload Data to storage system
 sync_data_up:
-	{% if cookiecutter.dataset_storage.s3 -%}
-	aws s3 sync s3://{{ cookiecutter.dataset_storage.s3.bucket }}/data/ data/\
-		{% if cookiecutter.dataset_storage.s3.aws_profile %} --profile $(PROFILE){% endif %}
-	{% elif cookiecutter.dataset_storage.azure -%}
-	az storage blob upload-batch -d {{ cookiecutter.dataset_storage.azure.container }}/data/ \
+	{% if cookiecutter.cloud_vendor == "AWS" -%}
+	aws s3 sync s3://{{ cookiecutter.bucket }}/data/ data/\
+		{% if cookiecutter.aws_profile %} --profile $(PROFILE){% endif %}
+	{% elif cookiecutter.cloud_vendor == "Azure" -%}
+	az storage blob upload-batch -d {{ cookiecutter.bucket }}/data/ \
 		-s data/
-	{% elif cookiecutter.dataset_storage.gcs -%}
-	gsutil rsync data/ gs://{{ cookiecutter.dataset_storage.gcs.bucket }}/data/
+	{% elif cookiecutter.cloud_vendor == "GCS" %}
+	gsutil rsync data/ gs://{{ cookiecutter.bucket }}/data/
 	{% endif %}
 {% endif %}
 

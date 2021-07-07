@@ -5,11 +5,7 @@
     "author_email": "Your (work) email",
     "description": "A short description of the project",
     "open_source_license": ["MIT", "BSD-3-Clause", "No license file"],
-    "dataset_storage": [
-        {"none": "none"},
-        {"azure": {"container": "container-name"}},
-        {"s3": {"bucket": "bucket-name", "aws_profile": "default"}},
-        {"gcs": {"bucket": "bucket-name"}}
-    ],
+    "cloud_vendor": ["none", "AWS", "GCP", "Azure"],
+    "bucket": "Name of the bucket/container where your data lives",
     "aws_profile": "default"
 }
