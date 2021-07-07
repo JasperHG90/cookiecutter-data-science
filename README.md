@@ -5,6 +5,8 @@ _A logical, reasonably standardized, but flexible project structure for doing an
 
 #### [Project homepage](http://drivendata.github.io/cookiecutter-data-science/)
 
+This project has been altered such that it uses [poetry](https://python-poetry.org/). I also added a pre-commit configuration,
+updated the .gitignore file and added some additional config (bumpversion primarily.)
 
 ### Requirements to use the cookiecutter template:
 -----------
