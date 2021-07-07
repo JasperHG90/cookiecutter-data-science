@@ -11,5 +11,5 @@
         {"s3": {"bucket": "bucket-name", "aws_profile": "default"}},
         {"gcs": {"bucket": "bucket-name"}}
     ],
-    "aws_profile": "default",
+    "aws_profile": "default"
 }
