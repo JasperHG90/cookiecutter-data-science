@@ -1,11 +1,26 @@
 {
     "project_name": "Name of your project",
     "repo_name": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
+    "module_name": "Name of your python module",
     "author_name": "Your name (or your organization/company/team)",
     "author_email": "Your (work) email",
     "description": "A short description of the project",
     "open_source_license": ["MIT", "BSD-3-Clause", "No license file"],
-    "cloud_vendor": ["none", "AWS", "GCP", "Azure"],
-    "bucket": "Name of the bucket/container where your data lives",
-    "aws_profile": "default"
+    "cloud_storage": [
+        {
+            "none": "none"
+        },
+        {
+            "AWS": {
+                "bucket": "none",
+                "aws_profile": "default"
+            }
+        },
+        {
+            "GCS": {
+                "bucket": "none",
+                "project_id": "none"
+            }
+        }
+    ],
 }

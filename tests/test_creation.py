@@ -95,9 +95,9 @@ class TestCookieSetup(object):
     def test_folders(self):
         expected_dirs = [
             'data',
-            'data/external',
-            'data/interim',
-            'data/processed',
+            'data/staging',
+            'data/prod',
+            'data/dev',
             'data/raw',
             'docs',
             'models',
@@ -105,11 +105,11 @@ class TestCookieSetup(object):
             'references',
             'reports',
             'reports/figures',
-            'src',
-            'src/data',
-            'src/features',
-            'src/models',
-            'src/visualization',
+            '{{ cookiecutter.module_name }}',
+            '{{ cookiecutter.module_name }}/data',
+            '{{ cookiecutter.module_name }}/features',
+            '{{ cookiecutter.module_name }}/models',
+            '{{ cookiecutter.module_name }}/visualization',
         ]
 
         ignored_dirs = [
