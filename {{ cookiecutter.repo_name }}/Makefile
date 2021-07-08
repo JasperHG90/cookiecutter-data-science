@@ -14,8 +14,8 @@ CLOUD_VENDOR = AWS
 CLOUD_VENDOR = GCP
 PROJECT_ID = {{ cookiecutter.project_profile_or_id }}
 {% endif %}
-{% endif %}
 DATA_BUCKET = {{ cookiecutter.data_bucket }}
+{% endif %}
 
 #################################################################################
 # COMMANDS                                                                      #
