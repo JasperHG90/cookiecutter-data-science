@@ -2,9 +2,9 @@
 name = "{{cookiecutter.repo_name}}"
 version = "0.1.0"
 description = '{{ cookiecutter.description }}'
-authors = ["Your name <your.name@guidion.net>"]
-maintainers = ["cookiecutter.author_name <{{cookiecutter.author_email}}>"]
-repository = "github repository url here"
+authors = ["{{ cookiecutter.author_name }} <{{cookiecutter.author_email}}>"]
+maintainers = ["{{ cookiecutter.author_name }} <{{cookiecutter.author_email}}>"]
+repository = '{% if cookiecutter.github_url != 'none' %}cookiecutter.github_url{% else %}'your-gh-repo-url'{% endif %}'
 license = '{% if cookiecutter.open_source_license == 'MIT' %}MIT{% elif cookiecutter.open_source_license == 'BSD-3-Clause' %}BSD-3{% endif %}'
 packages = [
     {include = "{{ cookiecutter.module_name }}"}
