@@ -1,122 +1,164 @@
-import os
+from typing import Union, List, Dict
 import pytest
-from subprocess import check_output
-from conftest import system_check
 
 
-def no_curlies(filepath):
-    """ Utility to make sure no curly braces appear in a file.
-        That is, was Jinja able to render everything?
+def helper_parse_circleci_command(
+    steps: List[Union[str, Dict[str, Union[List, str]]]],
+    step_name: str) -> str:
+    """Helper function that retrieves the command used for a particular step in a parsed circleci configuration
+    Parameters
+    ----------
+    steps : List[str, Dict[str, Union[List, str]]]
+        steps used in a circleci pipeline workflow
+    step_name : str
+        name of the step for which to extract the command
+    Returns
+    -------
+    str
+        the command used for a particular step
+    Raises
+    ------
+    ValueError
+        this error is raised when the step isn't found in the workflow
     """
-    with open(filepath, 'r') as f:
-        data = f.read()
+    cmd: Union[str, None] = None
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        if step.get("run") is None:
+            continue
+        if not isinstance(step.get("run"), dict):
+            continue
+        if step.get("run").get("name") == step_name:
+            cmd = step.get("run").get("command")
+    if cmd is None:
+        raise ValueError(f"'{step_name}' command not found in circleci config")
+    return cmd
 
-    template_strings = [
-        '{{',
-        '}}',
-        '{%',
-        '%}'
-    ]
 
-    template_strings_in_file = [s in data for s in template_strings]
-    return not any(template_strings_in_file)
+@pytest.mark.usefixtures("cookiecutter_setup")
+class TestCookiecutterTemplate:
+    def test_files_present(self):
+        assert self.cookiecutter_files == sorted([
+            '.env',
+            '.gitignore',
+            '.pre-commit-config.yaml',
+            'LICENSE',
+            'Makefile',
+            'README.md',
+            'data', 'docs', 'models', 'mypythoncode',
+            'notebooks', 'pyproject.toml',
+            'references', 'reports', 'setup.cfg', 'tests'
+        ])
 
+    def test_pyproject_poetry_env_name(self):
+        assert self.pyproject.get("tool").get("poetry").get("name") == self.args.get("repo_name")
 
-@pytest.mark.usefixtures("default_baked_project")
-class TestCookieSetup(object):
-    def test_project_name(self):
-        project = self.path
-        if pytest.param.get('project_name'):
-            name = system_check('DrivenData')
-            assert project.name == name
-        else:
-            assert project.name == 'project_name'
+    def test_pyproject_python_version(self):
+        assert (
+            self.pyproject.get("tool").get("poetry").get("dependencies").get("python")
+            == self.python_version
+        )
 
-    def test_author(self):
-        setup_ = self.path / 'pyproject.toml'
-        args = ['python', str(setup_), '--author']
-        p = check_output(args).decode('ascii').strip()
-        if pytest.param.get('author_name'):
-            assert p == 'DrivenData'
-        else:
-            assert p == 'Your name (or your organization/company/team)'
+    def test_pyproject_python_dev_dependencies(self):
+        assert (
+            self.pyproject.get("tool").get("poetry").get("dev-dependencies")
+            == self.dev_dependencies
+        )
 
-    def test_email(self):
-        setup_ = self.path / 'setup.py'
-        args = ['python', str(setup_), '--author']
-        p = check_output(args).decode('ascii').strip()
-        if pytest.param.get('author_name'):
-            assert p == 'DrivenData'
-        else:
-            assert p == 'Your name (or your organization/company/team)'
+    def test_pyproject_include_packages(self):
+        assert (
+            self.pyproject.get("tool").get("poetry").get("packages")[0].get("include")
+            == self.args.get("module_name")
+        )
 
-    def test_readme(self):
-        readme_path = self.path / 'README.md'
-        assert readme_path.exists()
-        assert no_curlies(readme_path)
-        if pytest.param.get('project_name'):
-            with open(readme_path) as fin:
-                assert 'DrivenData' == next(fin).strip()
+    def test_source_code_is_dir(self):
+        assert self.source_code_is_dir == True
 
-    def test_setup(self):
-        setup_ = self.path / 'setup.py'
-        args = ['python', str(setup_), '--version']
-        p = check_output(args).decode('ascii').strip()
-        assert p == '0.1.0'
+    def test_tests_is_dir(self):
+        assert self.tests_is_dir == True
 
-    def test_license(self):
-        license_path = self.path / 'LICENSE'
-        assert license_path.exists()
-        assert no_curlies(license_path)
+    def test_pre_commit_hooks_repo(self):
+        assert (
+            self.precommit_config.get("repos")[0].get("repo")
+            == "https://github.com/pre-commit/pre-commit-hooks"
+        )
 
-    def test_license_type(self):
-        setup_ = self.path / 'setup.py'
-        args = ['python', str(setup_), '--license']
-        p = check_output(args).decode('ascii').strip()
-        if pytest.param.get('open_source_license'):
-            assert p == 'BSD-3'
-        else:
-            assert p == 'MIT'
+    def test_pre_commit_hooks_version(self):
+        assert self.precommit_config.get("repos")[0].get("rev") == "v3.2.0"
 
-    def test_requirements(self):
-        reqs_path = self.path / 'requirements.txt'
-        assert reqs_path.exists()
-        assert no_curlies(reqs_path)
-        if pytest.param.get('python_interpreter'):
-            with open(reqs_path) as fin:
-                lines = list(map(lambda x: x.strip(), fin.readlines()))
-            assert 'pathlib2' in lines
-
-    def test_makefile(self):
-        makefile_path = self.path / 'Makefile'
-        assert makefile_path.exists()
-        assert no_curlies(makefile_path)
-
-    def test_folders(self):
-        expected_dirs = [
-            'data',
-            'data/staging',
-            'data/prod',
-            'data/dev',
-            'data/raw',
-            'docs',
-            'models',
-            'notebooks',
-            'references',
-            'reports',
-            'reports/figures',
-            '{{ cookiecutter.module_name }}',
-            '{{ cookiecutter.module_name }}/data',
-            '{{ cookiecutter.module_name }}/features',
-            '{{ cookiecutter.module_name }}/models',
-            '{{ cookiecutter.module_name }}/visualization',
+    def test_pre_commit_hooks_ids(self):
+        hook_ids = sorted(
+            [
+                hook.get("id")
+                for hook in self.precommit_config.get("repos")[0].get("hooks")
+            ]
+        )
+        assert hook_ids == [
+            "check-added-large-files",
+            "check-ast",
+            "check-toml",
+            "check-yaml",
+            "debug-statements",
+            "end-of-file-fixer",
+            "no-commit-to-branch",
+            "trailing-whitespace",
         ]
 
-        ignored_dirs = [
-            str(self.path)
-        ]
+    def test_pre_commit_black_repo(self):
+        assert (
+            self.precommit_config.get("repos")[1].get("repo")
+            == "https://github.com/psf/black"
+        )
 
-        abs_expected_dirs = [str(self.path / d) for d in expected_dirs]
-        abs_dirs, _, _ = list(zip(*os.walk(self.path)))
-        assert len(set(abs_expected_dirs + ignored_dirs) - set(abs_dirs)) == 0
+    def test_pre_commit_black_version(self):
+        assert self.precommit_config.get("repos")[1].get("rev") == "20.8b1"
 
+    def test_pre_commit_black_id(self):
+        hook_ids = sorted(
+            [
+                hook.get("id")
+                for hook in self.precommit_config.get("repos")[1].get("hooks")
+            ]
+        )
+        assert hook_ids == ["black"]
+
+    def test_pre_commit_mypy_repo(self):
+        assert (
+            self.precommit_config.get("repos")[3].get("repo")
+            == "https://github.com/pre-commit/mirrors-mypy"
+        )
+
+    def test_pre_commit_mypy_version(self):
+        assert self.precommit_config.get("repos")[3].get("rev") == "v0.812"
+
+    def test_pre_commit_mypy_ids(self):
+        hook_ids = sorted(
+            [
+                hook.get("id")
+                for hook in self.precommit_config.get("repos")[3].get("hooks")
+            ]
+        )
+        assert hook_ids == ["mypy"]
+
+    def test_circleci_docker_version(self):
+        assert (
+            self.circleci_config.get("jobs").get("build").get("docker")[0].get("image")
+            == self.circleci_docker_python
+        )
+
+    def test_circleci_cookiecutter_parsed_source_dir(self):
+        circleci_steps = self.circleci_config.get("jobs").get("build").get("steps")
+        cmd = helper_parse_circleci_command(circleci_steps, "Pytest")
+        cmd_split = cmd.split("--cov=")[-1]
+        assert cmd_split == self.args.get("module_name")
+
+    def test_circleci_mypy_checks_cmd(self):
+        circleci_steps = self.circleci_config.get("jobs").get("build").get("steps")
+        cmd = helper_parse_circleci_command(circleci_steps, "Type checks")
+        assert cmd == "poetry run mypy --ignore-missing-imports ."
+
+    def test_circleci_black_checks_cmd(self):
+        circleci_steps = self.circleci_config.get("jobs").get("build").get("steps")
+        cmd = helper_parse_circleci_command(circleci_steps, "Check code formatting")
+        assert cmd == "poetry run black --check ."

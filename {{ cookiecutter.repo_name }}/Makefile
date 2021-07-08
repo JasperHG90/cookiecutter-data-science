@@ -25,9 +25,9 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 requirements:
 	poetry install
 
-## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy, jupyter, numba)
+## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy, jupyter, numba, mlflow)
 install-ds-libs: requirements
-	poetry add pandas numpy scipy matplotlib dask dask-ml jupyter ipykernel numba
+	poetry add pandas numpy scipy matplotlib dask dask-ml jupyter ipykernel numba mlflow
 
 ## Make Dataset
 data: requirements
@@ -39,8 +39,12 @@ clean:
 	find . -type d -name "__pycache__" -delete
 
 ## Lint using flake8
-lint:
-	flake8 src
+lint: requirements
+	poetry run flake8 {{ cookiecutter.module_name }}
+
+## Run python tests
+test: requirements
+	poetry run pytest $(PROJECT_DIR)
 
 ## Set up pre-commit
 setup-pre-commit:
