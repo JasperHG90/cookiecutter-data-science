@@ -6,21 +6,10 @@
     "author_email": "Your (work) email",
     "description": "A short description of the project",
     "open_source_license": ["MIT", "BSD-3-Clause", "No license file"],
-    "cloud_storage": [
-        {
-            "none": "none"
-        },
-        {
-            "AWS": {
-                "bucket": "none",
-                "aws_profile": "default"
-            }
-        },
-        {
-            "GCS": {
-                "bucket": "none",
-                "project_id": "none"
-            }
-        }
-    ]
+    "cloud_vendor": ["none", "AWS", "GCP"],
+    {% if cookiecutter.cloud_vendor != "none" %}
+    {% if cookiecutter.cloud_vendor == 'AWS' %}
+    "profile": "default"
+    {% endif %}
+    {% endif %}
 }
