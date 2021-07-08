@@ -46,6 +46,12 @@ lint:
 setup-pre-commit:
 	poetry run pre-commit install
 
+{% if cookiecutter.cloud_vendor == 'GCP' -%}
+## Set google project id
+set-gcp-proj-id:
+	gcloud config set project $(PROJECT_ID)
+{% endif %}
+
 {% if cookiecutter.cloud_vendor != 'none' %}
 ## Download Data from storage system
 sync_data_down:
