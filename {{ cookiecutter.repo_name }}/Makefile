@@ -25,8 +25,8 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 requirements:
 	poetry install
 
-## Install common DS dependencies
-install-ds-dependencies:
+## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy)
+install-ds-libs: requirements
 	poetry add pandas numpy scipy matplotlib dask dask-ml
 
 ## Make Dataset
