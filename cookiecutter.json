@@ -9,5 +9,5 @@
     "open_source_license": ["MIT", "BSD-3-Clause", "No license file"],
     "cloud_vendor": ["none", "AWS", "GCP"],
     "data_bucket": "none",
-    "project_profile_or_id": "For AWS the profile you want to use (e.g. 'default'), for GCP the project id you want to use."
+    "project_profile_or_id": "For AWS the profile you want to use (e.g. 'default'), for GCP the project id you want to use"
 }
