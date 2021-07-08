@@ -6,17 +6,16 @@
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = {{ cookiecutter.repo_name }}
-{% if not cookiecutter.cloud_storage.none %}
-{% if cookiecutter.cloud_storage.AWS %}
-PROFILE = {{cookiecutter.cloud_storage.AWS.aws_profile}}
+{% if cookiecutter.cloud_vendor != 'none' %}
+{% if cookiecutter.cloud_vendor == 'AWS' -%}
+PROFILE = {{ cookiecutter.project_profile_or_id }}
 CLOUD_VENDOR = AWS
-DATA_BUCKET = {{ cookiecutter.cloud_storage.AWS.bucket }}
-{% elif cookiecutter.cloud_storage.GCP %}
+{% elif cookiecutter.cloud_vendor == 'GCP' -%}
 CLOUD_VENDOR = GCP
-DATA_BUCKET = {{ cookiecutter.cloud_storage.GCP.bucket }}
-PROJECT_ID = {{ cookiecutter.cloud_storage.GCP.project_id }}
+PROJECT_ID = {{ cookiecutter.project_profile_or_id }}
 {% endif %}
 {% endif %}
+DATA_BUCKET = {{ cookiecutter.data_bucket }}
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -47,23 +46,23 @@ lint:
 setup-pre-commit:
 	poetry run pre-commit install
 
-{% if not cookiecutter.cloud_vendor == "none" %}
+{% if cookiecutter.cloud_vendor != 'none' %}
 ## Download Data from storage system
 sync_data_down:
-	{% if cookiecutter.cloud_storage.AWS -%}
-	aws s3 sync s3://{{ cookiecutter.cloud_storage.AWS.bucket }}/data/\
-		data/ {% if cookiecutter.cloud_storage.AWS.aws_profile != 'default' %} --profile {{ cookiecutter.cloud_storage.AWS.aws_profile }}{% endif %}
-	{% elif cookiecutter.cloud_storage.GCP -%}
-	gsutil rsync gs://{{ cookiecutter.cloud_storage.GCP.bucket }}/data/ data/
+	{% if cookiecutter.cloud_vendor == 'AWS' -%}
+	aws s3 sync s3://$(DATA_BUCKET)/data/\
+		data/ --profile $(PROFILE)
+	{% elif cookiecutter.cloud_vendor == 'GCP' -%}
+	gsutil rsync gs://$(DATA_BUCKET)/data/ data/
 	{% endif %}
 
 ## Upload Data to storage system
 sync_data_up:
-	{% if cookiecutter.cloud_storage.AWS -%}
-	aws s3 sync s3://{{ cookiecutter.cloud_storage.AWS.bucket }}/data/ data/\
-		{% if cookiecutter.cloud_storage.AWS.aws_profile %} --profile $(PROFILE){% endif %}
-	{% elif cookiecutter.cloud_storage.GCP -%}
-	gsutil rsync data/ gs://{{ cookiecutter.cloud_storage.GCP.bucket }}/data/
+	{% if cookiecutter.cloud_vendor == 'AWS' -%}
+	aws s3 sync s3://$(DATA_BUCKET)/data/ data/\
+		--profile $(PROFILE)
+	{% elif cookiecutter.cloud_vendor == 'GCP' -%}
+	gsutil rsync data/ gs://$(DATA_BUCKET)/data/
 	{% endif %}
 {% endif %}
 
