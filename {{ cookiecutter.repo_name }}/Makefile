@@ -63,7 +63,7 @@ sync_data_down:
 	aws s3 sync s3://$(DATA_BUCKET)/data/\
 		data/ --profile $(PROFILE)
 	{% elif cookiecutter.cloud_vendor == 'GCP' -%}
-	gsutil rsync gs://$(DATA_BUCKET)/data/ data/
+	gsutil rsync -r gs://$(DATA_BUCKET)/data/ data/
 	{% endif %}
 
 ## Upload Data to storage system
@@ -72,7 +72,7 @@ sync_data_up:
 	aws s3 sync s3://$(DATA_BUCKET)/data/ data/\
 		--profile $(PROFILE)
 	{% elif cookiecutter.cloud_vendor == 'GCP' -%}
-	gsutil rsync data/ gs://$(DATA_BUCKET)/data/
+	gsutil rsync -r data/ gs://$(DATA_BUCKET)/data/
 	{% endif %}
 {% endif %}
 
