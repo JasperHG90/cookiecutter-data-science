@@ -25,25 +25,17 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 update-pip:
 	poetry run python -m pip install -U pip
 
-## Install Python Dependencies
-requirements: update-pip
+## Install python dependencies
+setup: update-pip
 	poetry install
 
 ## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy, jupyter, numba, mlflow)
-install-ds-libs: requirements
+install-ds-libs: setup
 	poetry add pandas numpy scipy matplotlib dask dask-ml jupyter ipykernel numba mlflow
 
-## Install library in editable mode
-pip-install-editable:
-	poetry run pip install -e .
-
-## Set up the project by installing dependencies and installing the module in editable mode
-setup:
-	make requirements && make pip-install-editable
-
 ## Make Dataset
-data: requirements
-	poetry run python src/data/make_dataset.py data/raw data/processed
+data: setup
+	poetry run python {{ cookiecutter.module_name }}/data/make_dataset.py data/raw data/processed
 
 ## Delete all compiled Python files
 clean:
@@ -51,11 +43,11 @@ clean:
 	find . -type d -name "__pycache__" -delete
 
 ## Lint using flake8
-lint: requirements
+lint: setup
 	poetry run flake8 {{ cookiecutter.module_name }}
 
 ## Run python tests
-test: requirements
+test: setup
 	poetry run pytest $(PROJECT_DIR)
 
 ## Set up pre-commit
