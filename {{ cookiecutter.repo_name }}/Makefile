@@ -25,10 +25,6 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 requirements: update-pip
 	poetry install
 
-## Install Python Dependencies
-requirements:
-	poetry install
-
 ## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy, jupyter, numba, mlflow)
 install-ds-libs: requirements
 	poetry add pandas numpy scipy matplotlib dask dask-ml jupyter ipykernel numba mlflow
