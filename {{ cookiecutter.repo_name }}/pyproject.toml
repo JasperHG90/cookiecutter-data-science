@@ -7,7 +7,7 @@ maintainers = ["{{ cookiecutter.author_name }} <{{cookiecutter.author_email}}>"]
 repository = '{% if cookiecutter.github_url != 'none' %}{{cookiecutter.github_url}}{% else %}'your-gh-repo-url'{% endif %}'
 license = '{% if cookiecutter.open_source_license == 'MIT' %}MIT{% elif cookiecutter.open_source_license == 'BSD-3-Clause' %}BSD-3{% endif %}'
 packages = [
-    {include = "{{ cookiecutter.module_name }}"}
+    {include = "src"}
 ]
 
 [tool.poetry.dependencies]

@@ -37,6 +37,10 @@ install-ds-libs: requirements
 pip-install-editable:
 	poetry run pip install -e .
 
+## Set up the project by installing dependencies and installing the module in editable mode
+setup:
+	make requirements && make pip-install-editable
+
 ## Make Dataset
 data: requirements
 	poetry run python src/data/make_dataset.py data/raw data/processed
