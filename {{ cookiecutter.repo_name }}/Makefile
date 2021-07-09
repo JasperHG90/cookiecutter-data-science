@@ -22,12 +22,20 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 #################################################################################
 
 ## Install Python Dependencies
+requirements: update-pip
+	poetry install
+
+## Install Python Dependencies
 requirements:
 	poetry install
 
 ## Install common DS libraries (pandas, numpy, dask, matplotlib, dask-ml, scipy, jupyter, numba, mlflow)
 install-ds-libs: requirements
 	poetry add pandas numpy scipy matplotlib dask dask-ml jupyter ipykernel numba mlflow
+
+## Install library in editable mode
+pip-install-editable:
+	poetry run pip install -e .
 
 ## Make Dataset
 data: requirements
