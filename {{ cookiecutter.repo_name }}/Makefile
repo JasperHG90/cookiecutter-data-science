@@ -21,6 +21,10 @@ DATA_BUCKET = {{ cookiecutter.data_bucket }}
 # COMMANDS                                                                      #
 #################################################################################
 
+## Upgrade pip
+update-pip:
+	poetry run python -m pip install -U pip
+
 ## Install Python Dependencies
 requirements: update-pip
 	poetry install
