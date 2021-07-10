@@ -132,6 +132,15 @@ class TestCookiecutterTemplate:
     def test_pre_commit_mypy_version(self):
         assert self.precommit_config.get("repos")[3].get("rev") == "v0.812"
 
+    def test_pre_commit_isort_version(self):
+        assert self.precommit_config.get("repos")[4].get("rev") == "5.9.2"
+
+    def test_pre_commit_isort_repo(self):
+        assert (
+            self.precommit_config.get("repos")[4].get("repo")
+            == "https://github.com/pycqa/isort"
+        )
+
     def test_pre_commit_mypy_ids(self):
         hook_ids = sorted(
             [
