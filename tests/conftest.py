@@ -29,7 +29,8 @@ def cookiecutter_setup(request):
         "pre-commit": "^2.12.1",
         "pytest": "^5.2",
         "pytest-cov": "^2.11.1",
-        "bump2version": "^1.0.1"
+        "bump2version": "^1.0.1",
+        "isort": "^5.9.2"
     }
     request.cls.python_version = ">=3.8,<3.10"
     request.cls.circleci_docker_python = "cimg/python:3.8"

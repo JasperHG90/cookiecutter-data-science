@@ -40,6 +40,7 @@ def helper_parse_circleci_command(
 class TestCookiecutterTemplate:
     def test_files_present(self):
         assert self.cookiecutter_files == sorted([
+            '.circleci',
             '.env',
             '.gitignore',
             '.pre-commit-config.yaml',
@@ -95,7 +96,6 @@ class TestCookiecutterTemplate:
             ]
         )
         assert hook_ids == [
-            "check-added-large-files",
             "check-ast",
             "check-toml",
             "check-yaml",
